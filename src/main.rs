@@ -3,7 +3,7 @@ use std::io;
 
 use rand::Rng;
 
-const MIN: u8 = 0;
+const MIN: u8 = 1;
 const MAX: u8 = 100;
 const MAX_ATTEMPTS: u8 = 7;
 
@@ -33,13 +33,12 @@ fn start_game(secret_number: u8) -> GameOutcome {
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
-        let user_input_int: i8 = i8::from_str_radix(input.trim(), 10).unwrap_or(-1);
-        if user_input_int == -1 {
+        let user_input_int: u8 = u8::from_str_radix(input.trim(), 10).unwrap_or(0);
+        if user_input_int == 0 {
             println!("This is not a number :-/");
             continue;
         }
-        let user_input_uint = user_input_int.abs() as u8;
-        let result = check_user_input(secret_number, user_input_uint);
+        let result = check_user_input(secret_number, user_input_int);
 
         match result {
             UserInputCheckResult::TooSmall => println!("Too small!"),
