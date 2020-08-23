@@ -1,6 +1,6 @@
+use std::cmp::Ordering;
 use std::io;
 
-use rand;
 use rand::Rng;
 
 const MIN: u8 = 0;
@@ -9,13 +9,27 @@ const MAX_ATTEMPTS: u8 = 7;
 
 fn main() {
     let secret_number = get_secret_number();
-    start_game(secret_number);
+    let game_outcome = start_game(secret_number);
+    match game_outcome {
+        GameOutcome::Success { attempts_count } => {
+            println!("You found it!!! (in {} attempts)", attempts_count)
+        }
+        GameOutcome::GameOver => println!("You haven't found it :-/ (it was {})", secret_number),
+    }
 }
 
-fn start_game(secret_number: u8) {
+enum GameOutcome {
+    Success { attempts_count: u8 },
+    GameOver,
+}
+
+fn start_game(secret_number: u8) -> GameOutcome {
     // println!("(secret number is {})", secret_number);
     for attempts_count in 1..(MAX_ATTEMPTS + 1) {
-        println!("[attempt {}] What's your guess?", attempts_count);
+        println!(
+            "[attempt {}/{}] What's your guess?",
+            attempts_count, MAX_ATTEMPTS
+        );
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
 
@@ -31,12 +45,12 @@ fn start_game(secret_number: u8) {
             UserInputCheckResult::TooSmall => println!("Too small!"),
             UserInputCheckResult::TooBig => println!("Too Big!"),
             UserInputCheckResult::FoundIt => {
-                println!("You found it!!! (in {} attempts)", attempts_count);
-                return;
+                return GameOutcome::Success { attempts_count };
             }
         }
     }
-    println!("You haven't found it :-/ (it was {})", secret_number);
+
+    GameOutcome::GameOver
 }
 
 fn get_secret_number() -> u8 {
@@ -51,11 +65,9 @@ enum UserInputCheckResult {
 }
 
 fn check_user_input(secret_number: u8, user_input: u8) -> UserInputCheckResult {
-    if user_input < secret_number {
-        UserInputCheckResult::TooSmall
-    } else if user_input > secret_number {
-        UserInputCheckResult::TooBig
-    } else {
-        UserInputCheckResult::FoundIt
+    match secret_number.cmp(&user_input) {
+        Ordering::Greater => UserInputCheckResult::TooSmall,
+        Ordering::Less => UserInputCheckResult::TooBig,
+        Ordering::Equal => UserInputCheckResult::FoundIt,
     }
 }
