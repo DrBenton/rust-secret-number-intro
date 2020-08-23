@@ -41,7 +41,7 @@ fn start_game(secret_number: u8) {
 
 fn get_secret_number() -> u8 {
     let mut rng_generator = rand::thread_rng();
-    return rng_generator.gen_range(MIN, MAX + 1);
+    rng_generator.gen_range(MIN, MAX + 1)
 }
 
 enum UserInputCheckResult {
@@ -51,11 +51,11 @@ enum UserInputCheckResult {
 }
 
 fn check_user_input(secret_number: u8, user_input: u8) -> UserInputCheckResult {
-    return if user_input < secret_number {
+    if user_input < secret_number {
         UserInputCheckResult::TooSmall
     } else if user_input > secret_number {
         UserInputCheckResult::TooBig
     } else {
         UserInputCheckResult::FoundIt
-    };
+    }
 }
